@@ -5,7 +5,6 @@ import Like from '../common/like';
 import Pagination from '../common/pagination';
 import { paginate } from '../utils/paginate';
 import ListGroup from '../common/listGroup';
-import { filter } from 'lodash';
 
 export default class Movie extends Component{
     
