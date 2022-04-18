@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {getMovies } from '../services/fakeMovieService'
 import { getGenres } from '../services/fakeGenreService';
-import Like from '../common/like';
 import Pagination from '../common/pagination';
 import { paginate } from '../utils/paginate';
 import ListGroup from '../common/listGroup';
+import MovieTable from './moviesTable';
+import _ from 'lodash'
 
 export default class Movie extends Component{
     
@@ -13,7 +14,8 @@ export default class Movie extends Component{
         genres: [],
         pageSize: 4,
         currentPage:1,
-        selectedGenre:""
+        // selectedGenre:"",
+        sortColumn: {path:'title', order:'asc'}
     }
 
     componentDidMount(){
@@ -24,7 +26,7 @@ export default class Movie extends Component{
         })
     }
 
-    deleteMovie= (movie) => {
+       handleDelete= (movie) => {
         const movies = this.state.movieList.filter(
             m => m._id !== movie._id
         )
@@ -58,24 +60,47 @@ export default class Movie extends Component{
         })
     }
 
-    render(){
-    
-        const {currentPage, pageSize, selectedGenre, movieList} = this.state  
+    handleSort = (sortColumn) => {
+        this.setState({sortColumn})
+    }
+
+    getPagedData = () => {
+
+        const {
+            currentPage, 
+            pageSize, 
+            selectedGenre, 
+            movieList, 
+            sortColumn
+        } = this.state         
 
         const filteredList = selectedGenre && selectedGenre._id  
-            ? movieList.filter(m => m.genre._id == selectedGenre._id)
+            ? movieList.filter(m => m.genre._id === selectedGenre._id)
             : movieList
 
-        const movies = paginate(filteredList, currentPage, pageSize)
-        const count = filteredList.length
+        const orderedList = _.orderBy(filteredList, [sortColumn.path], [sortColumn.order])
+        const movies = paginate(orderedList, currentPage, pageSize)
 
-        if (count === 0){
+        return {count: orderedList.length, movies: movies}
+    }
+
+    render(){
+
+        const {
+            currentPage, 
+            pageSize,  
+            sortColumn
+        } = this.state         
+
+        const {count, movies} = this.getPagedData()
+
+        if (count===0){
             return <p>There are no movies in the store</p>
         } 
 
         return (
             <div className='row'>
-                <h1 className="display-3"> Vidly </h1>   
+                <h1 className="display-3"> CineEra </h1>   
                 <h3> Movie Rental Service</h3>
                 
                 <div className="col-3">
@@ -87,33 +112,12 @@ export default class Movie extends Component{
                 </div>
                 <div className="col">
                 <p>Showing {count} movies in the list </p>
-                    <table className='table table-striped'> 
-                        <thead>
-                            <tr>
-                                <th> Title </th> 
-                                <th> Genre </th>
-                                <th> Stock </th>
-                                <th> Rate </th>
-                                <th>  </th>
-                                <th>  </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {movies.map(
-                                movie => (
-                                    <tr key={movie._id}> 
-                                        <td> {movie.title} </td>  
-                                        <td> {movie.genre.name} </td>
-                                        <td> {movie.numberInStock} </td>
-                                        <td> {movie.dailyRentalRate} </td>
-                                        <td> 
-                                            <Like liked={movie.liked} onClick={() => this.handleLike(movie)} />                                    </td>
-                                        <td> <button onClick={() => this.deleteMovie(movie)} className='btn btn-danger'> Delete </button> </td>
-                                    </tr>
-                                )
-                            )}
-                        </tbody>    
-                    </table>
+                    <MovieTable
+                        movies={movies}
+                        onLike={this.handleLike}
+                        onDelete={this.handleDelete}   
+                        onSort={sortColumn} 
+                    />
                     <Pagination 
                         itemsCount={count} 
                         pageSize={pageSize} 
