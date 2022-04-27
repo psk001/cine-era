@@ -6,6 +6,7 @@ import { paginate } from '../utils/paginate';
 import ListGroup from '../common/listGroup';
 import MovieTable from './moviesTable';
 import _ from 'lodash'
+import { Link } from 'react-router-dom';
 
 export default class Movie extends Component{
     
@@ -101,8 +102,7 @@ export default class Movie extends Component{
         return (
             <div className='row'>
                 <h1 className="display-3"> CineEra </h1>   
-                <h3> Movie Rental Service</h3>
-                
+                        
                 <div className="col-3">
                     <ListGroup 
                         items= {this.state.genres}
@@ -112,10 +112,20 @@ export default class Movie extends Component{
                 </div>
                 <div className="col">
                 <p>Showing {count} movies in the list </p>
+                    <Link 
+                        to="/movies/new"
+                        className="btn btn-primary"
+                        style={{marginBottom: 20}}
+                    >
+                        New
+                    </Link>
+                    
+                    <SearchBox value={searchQuery} onChange={this.handleSearch} />
+
                     <MovieTable
                         movies={movies}
                         onLike={this.handleLike}
-                        onDelete={this.handleDelete}   
+                         onDelete={this.handleDelete}   
                         onSort={sortColumn} 
                     />
                     <Pagination 

@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  padding: 20px 0 0 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -12,7 +13,18 @@ code {
     monospace;
 }
 
-.clickabl{
+.navbar{
+  margin: 30px;
+}
+
+.clickable {
   cursor:pointer
 }
 
+Link {
+  text-decoration: none;
+}
+
+.btn{
+  margin-top: 10px;
+}
